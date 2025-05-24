@@ -1,0 +1,48 @@
+variables = {}
+
+def run_line(line):
+    line = line.strip()
+    if line.startswith("DECLARE"):
+        # Makes a variable for you
+        parts = line.split()
+        var_name = parts[1]
+        variables[var_name] = None
+    elif line.startswith("OUTPUT"):
+        # Prints text or variable value
+        content = line[7:].strip()
+        if content.startswith('"') and content.endswith('"'):
+            print(content[1:-1])
+        else:
+            print(variables.get(content, "UNDEFINED"))
+    elif line.startswith("INPUT"):
+        # Waits for user input and stores it
+        var_name = line[6:].strip()
+        val = input()
+        variables[var_name] = val
+    elif ":=" in line or "←" in line:
+        # Simple assignment like X ← 5
+        if "←" in line:
+            var_name, expr = line.split("←")
+        else:
+            var_name, expr = line.split(":=")
+        var_name = var_name.strip()
+        expr = expr.strip()
+        if expr.isdigit():
+            variables[var_name] = int(expr)
+        elif expr in variables:
+            variables[var_name] = variables[expr]
+        else:
+            variables[var_name] = expr
+    else:
+        print("I don’t get this line:", line)
+
+# Here’s some sample pseudocode your “interpreter” can run:
+program = [
+    "DECLARE X : INTEGER",
+    "OUTPUT \"Enter a number:\"",
+    "INPUT X",
+    "OUTPUT X",
+]
+
+for line in program:
+    run_line(line)
